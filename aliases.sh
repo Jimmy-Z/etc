@@ -2,8 +2,8 @@
 
 alias ls='ls --color=auto'
 alias l='ls -CF'
-alias ll='ls -l'
-alias la='ls -Al'
+alias ll='ls -lh'
+alias la='ls -Alh'
 
 avail(){
 	# https://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
@@ -40,4 +40,3 @@ fi
 avail vim && alias vi='vim'
 avail tmux && alias ta='tmux a||tmux'
 avail mc && alias mc='TERM=xterm-256color mc'
-
