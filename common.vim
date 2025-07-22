@@ -1,5 +1,5 @@
 " this file contains vim/neovim common settings
-" source this in vimrc/init.vim
+" source this in vimrc(/etc/vim/vimrc.local for root) or init.vim
 
 " K on them to get help, or https://vimhelp.org/
 
