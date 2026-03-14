@@ -1,5 +1,4 @@
-" this file contains vim/neovim common settings
-" source this in vimrc(/etc/vim/vimrc.local for root) or init.vim
+" vim/neovim common settings
 
 " K on them to get help, or https://vimhelp.org/
 
@@ -13,11 +12,12 @@ set cursorline
 set scrolloff=12
 " there's no option like vscode/zed disable scroll beyond eof
 " well, use C-d instead of C-f
+" btw, also use C-u instead of C-b to prevent conflict with tmux
 
 " my capricious
-set noexpandtab
-set tabstop=3
-set shiftwidth=3
+autocmd FileType * setlocal noexpandtab
+autocmd FileType * setlocal tabstop=3
+autocmd FileType * setlocal shiftwidth=3
 
 " encoding list to try when reading files
 " to reload a file using a specific encoding :e ++enc=cp437
@@ -26,6 +26,7 @@ set fileencodings=ucs-bom,utf-8,latin1
 setglobal fenc=utf-8
 " nobody wants crlf
 set fileformats=unix,dos
+let g:is_posix=1
 
 set mouse=a
 set confirm

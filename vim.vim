@@ -1,5 +1,4 @@
-" this file contains vim only (not neovim) settings
-" source this in vimrc(/etc/vim/vimrc.local for root)
+" vim specific (not neovim) settings
 
 set laststatus=2
 
