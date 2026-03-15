@@ -14,21 +14,21 @@ else
 	PROMPT_CHAR='#'
 fi
 # title
-if test ! -z $MSYSTEM; then
+if test "$MSYSTEM"; then
 	PS1="\[\e]0;MSYS2 \w\a\]"
-elif test ! -z $TERMUX_VERSION; then
+elif test "$TERMUX_VERSION"; then
 	PS1="\[\e]0;\w\a\]"
 else
 	PS1="\[\e]0;\u@\h:\w\a\]"
 fi
 # special prefix
-if test ! -z $debian_chroot; then
+if test "$debian_chroot"; then
 	PS1="$PS1"'\[\033[01;35m\]($debian_chroot)\[\033[00m\]'
-elif test ! -z $MSYSTEM; then
+elif test "$MSYSTEM"; then
 	PS1="$PS1"'\[\033[01;35m\]($MSYSTEM)\[\033[00m\]'
 fi
 # the usual user@host:pwd
-if test -z $MSYSTEM -a -z $TERMUX_VERSION; then
+if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
 	PS1="$PS1"'\[\033[01;'$COLOR_0'm\]\u\[\033[00m\]'
 	PS1="$PS1"'\[\033[01;'$COLOR_1'm\]@\[\033[00m\]'
 	PS1="$PS1"'\[\033[01;'$COLOR_0'm\]\h\[\033[00m\]'
@@ -42,12 +42,12 @@ fi
 PS1="$PS1"'\[\033[01;'$COLOR_0'm\]'$PROMPT_CHAR'\[\033[00m\] '
 
 # more msys2 specific things
-if test ! -z $MSYSTEM; then
+if test "$MSYSTEM"; then
 	export MSYS=winsymlinks:nativestrict
 	export SSH_AUTH_SOCK=$(cygpath -u $LOCALAPPDATA)/ssh-auth-sock
 	# add scoop shims to PATH, since reasons
 	SCOOP=/d/scoop/shims
-	if test -d $SCOOP; then
+	if test -d "$SCOOP"; then
 		export PATH=$PATH:$SCOOP
 	fi
 fi
@@ -66,8 +66,8 @@ avail(){
 
 try_location(){
 	# https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
-	for f;do
-		if [ -f "$f" ];then
+	for f; do
+		if test -f "$f"; then
 			echo "$f"
 			break
 		fi
@@ -91,7 +91,7 @@ elif avail pacman;then
 	alias pq='pacman -Ss'
 fi
 
-if avail avail nvim; then
+if avail nvim; then
 	if avail neovide; then
 		alias vim=neovide
 		alias vi=neovide
