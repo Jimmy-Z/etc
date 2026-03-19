@@ -6,7 +6,7 @@ set title
 set titlestring=%f\ \(%{getcwd()}\)
 set statusline=%h%w%m%r\ %f\ \(%{getcwd()}\)\ %=\ %{&filetype}\ %{&fenc}\ %{&fileformat}\ \(%l,%c\)\ %P
 
-" most time I don't need this, so to save some space
+" most of the time I don't need this, so to save some space
 " set number
 set cursorline
 set scrolloff=12
@@ -22,10 +22,13 @@ autocmd FileType * setlocal shiftwidth=3
 " encoding list to try when reading files
 " to reload a file using a specific encoding :e ++enc=cp437
 set fileencodings=ucs-bom,utf-8,latin1
+autocmd BufReadPre *.nfo set fileencodings=cp437
 " encoding on new files
 setglobal fenc=utf-8
 " nobody wants crlf
 set fileformats=unix,dos
+
+" use newer standards for shell scripts syntax highlighting
 let g:is_posix=1
 
 set mouse=a
@@ -37,6 +40,9 @@ set smartcase
 
 set list " show whitespaces
 set listchars=tab:»\ ,trail:·,nbsp:␣ " pretty unicode chars
+
+" reset cursor shape on exit, doesn't seem to be working
+autocmd VimLeave * silent !echo -ne "\\e[0 q"
 
 " n mode, non-recursive map
 nnoremap <ESC> :noh<CR>

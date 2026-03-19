@@ -23,23 +23,23 @@ else
 fi
 # special prefix
 if test "$debian_chroot"; then
-	PS1="$PS1"'\[\033[01;35m\]($debian_chroot)\[\033[00m\]'
+	PS1="$PS1"'\[\e[01;35m\]($debian_chroot)\[\e[00m\]'
 elif test "$MSYSTEM"; then
-	PS1="$PS1"'\[\033[01;35m\]($MSYSTEM)\[\033[00m\]'
+	PS1="$PS1"'\[\e[01;35m\]($MSYSTEM)\[\e[00m\]'
 fi
 # the usual user@host:pwd
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
-	PS1="$PS1"'\[\033[01;'$COLOR_0'm\]\u\[\033[00m\]'
-	PS1="$PS1"'\[\033[01;'$COLOR_1'm\]@\[\033[00m\]'
-	PS1="$PS1"'\[\033[01;'$COLOR_0'm\]\h\[\033[00m\]'
+	PS1="$PS1"'\[\e[01;'$COLOR_0'm\]\u\[\e[00m\]'
+	PS1="$PS1"'\[\e[01;'$COLOR_1'm\]@\[\e[00m\]'
+	PS1="$PS1"'\[\e[01;'$COLOR_0'm\]\h\[\e[00m\]'
 fi
-PS1="$PS1"'\[\033[01;'$COLOR_1'm\]:\w\[\033[00m\]'
+PS1="$PS1"'\[\e[01;'$COLOR_1'm\]:\w\[\e[00m\]'
 # git
 if type __git_ps1 >/dev/null 2>&1; then
-	PS1="$PS1"'\[\033[01;35m\]$(__git_ps1)\[\033[00m\]'
+	PS1="$PS1"'\[\e[01;35m\]$(__git_ps1)\[\e[00m\]'
 fi
 # prompt
-PS1="$PS1"'\[\033[01;'$COLOR_0'm\]'$PROMPT_CHAR'\[\033[00m\] '
+PS1="$PS1"'\[\e[01;'$COLOR_0'm\]'$PROMPT_CHAR'\[\e[00m\] '
 
 # more msys2 specific things
 if test "$MSYSTEM"; then
@@ -104,4 +104,3 @@ elif avail vim; then
 fi
 
 avail tmux && alias ta='tmux a||tmux'
-

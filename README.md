@@ -1,8 +1,12 @@
 ### ideally, keep local clone shallow
-```
-git clone --depth 1 ...
-git fetch --depth 1 origin main && git reset --hard origin/main && git gc --prune=now
-```
+* initial clone
+	```
+	git clone --depth 1 <this repo>
+	```
+* update
+	```
+	./update
+	```
 
 ### profile
 source `profile.sh` in `~/.bashrc`

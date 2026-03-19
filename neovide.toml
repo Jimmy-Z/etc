@@ -1,9 +1,8 @@
-# make a link here: %appdata%\roaming\neovide\config.toml
+# make a link here: %APPDATA%\neovide\config.toml
 [font]
 size = 11
 edging = "subpixelantialias"
 
 [[font.normal]]
-family = "Cascadia Mono"
+family = "Cascadia Code"
 style = "Thin"
-
