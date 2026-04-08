@@ -4,5 +4,5 @@ size = 11
 edging = "subpixelantialias"
 
 [[font.normal]]
-family = "Cascadia Code"
+family = "Cascadia Mono"
 style = "Thin"

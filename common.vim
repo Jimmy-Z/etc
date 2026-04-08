@@ -12,17 +12,18 @@ set cursorline
 set scrolloff=12
 " there's no option like vscode/zed disable scroll beyond eof
 " well, use C-d instead of C-f
-" btw, also use C-u instead of C-b to prevent conflict with tmux
+" btw, also use C-u instead of C-b to prevent confliction with tmux
 
-" my capricious
-autocmd FileType * setlocal noexpandtab
-autocmd FileType * setlocal tabstop=3
-autocmd FileType * setlocal shiftwidth=3
+set noexpandtab
+set tabstop=3
+set shiftwidth=3
+" my capricious, yaml sucks
+autocmd FileType * if index(['yaml'], &ft) == -1 | setlocal noet ts=3 sw=3
 
 " encoding list to try when reading files
 " to reload a file using a specific encoding :e ++enc=cp437
 set fileencodings=ucs-bom,utf-8,latin1
-autocmd BufReadPre *.nfo set fileencodings=cp437
+autocmd BufReadPre *.nfo setlocal fileencodings=cp437
 " encoding on new files
 setglobal fenc=utf-8
 " nobody wants crlf
@@ -50,3 +51,4 @@ nnoremap <Tab> <C-w>w
 nnoremap <S-Tab> <C-w>W
 nnoremap <C-Tab> :bnext<CR>
 nnoremap <C-S-Tab> :bprev<CR>
+

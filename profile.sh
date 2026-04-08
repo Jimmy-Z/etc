@@ -86,6 +86,20 @@ try_location(){
 	done
 }
 
+if avail apt-cache;then
+	# apt doesn't have a good "list explicitly installed" like `pacman -Qe`
+	# this is the probably best approach: it list all "top-level" packages
+	# i.e. doesn't have any other packages depending on them
+	pe(){
+		dpkg-query --show --showformat='${Package}\t${Status}\n' |\
+			tac |\
+			awk '/installed$/ {print $1}' |\
+			xargs apt-cache rdepends --installed |\
+			tac |\
+			awk '{ if (/^ /) ++deps; else if (!/:$/) { if (!deps) print; deps = 0 } }'
+	}
+fi
+
 if avail apt;then
 	alias pi='apt install --no-install-recommends'
 	alias pu='apt update&&apt autoclean&&apt upgrade'
@@ -101,6 +115,7 @@ elif avail pacman;then
 	alias pu='pacman -Syu;pacman -Sc'
 	alias pr='pacman -R'
 	alias pq='pacman -Ss'
+	alias pe='pacman -Qe'
 fi
 
 if avail nvim; then
@@ -116,4 +131,7 @@ elif avail vim; then
 fi
 
 avail tmux && alias ta='tmux a||tmux'
+
+# this thing is really nasty though, dbus and stuff
+avail udisksctl && alias eject='udisksctl power-off --block-device'
 
