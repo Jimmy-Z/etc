@@ -83,6 +83,8 @@ if avail git;then
 	}
 
 	alias gl='git log --oneline'
+	alias gs='git pull --rebase&&git push'
+	alias gu1='git pull --depth=1&&git gc --prune=now'
 fi
 
 unset -f __color_seq
@@ -145,7 +147,7 @@ if test "$MSYSTEM"; then
 	unset SCOOP
 fi
 
-# aliases
+# common aliases
 
 alias ls='ls --color=auto'
 alias l='ls -CF'
