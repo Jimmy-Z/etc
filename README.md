@@ -9,10 +9,10 @@
 	```
 
 ### profile
-source `profile.sh` in `~/.bashrc`
+source `profile.sh` in `~/.mkshrc` (or `~/.bashrc`)
 ```sh
 if test -f ~/etc/profile.sh; then
-	source ~/etc/profile.sh
+	. ~/etc/profile.sh
 fi
 ```
 

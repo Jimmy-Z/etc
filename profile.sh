@@ -70,15 +70,13 @@ if avail git;then
 		# since local is a command, it has return value
 		local s
 		local cnt
-		s="$(git status --short|__head_n_count)"
+		s="$(git -c color.ui=always status --short|__head_n_count)"
 		cnt=$?
 		# echo "debug: $s, $cnt" >&2
 		if test "$cnt" -eq 0; then
 			s="${C_GREEN}clean$C_END"
-		elif test "$cnt" -eq 1; then
-			s="$C_RED$s$C_END"
-		else
-			s="$C_RED$s$C_END ..."
+		elif test "$cnt" -gt 1; then
+			s="$s ..."
 		fi
 		# maybe also squeeze a "$(git rev-parse --short=7 HEAD)" in there?
 		eval "echo -n \"$__GIT_PS1_FMT\""
