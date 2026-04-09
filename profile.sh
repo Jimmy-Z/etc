@@ -15,16 +15,16 @@ if test "$KSH_VERSION"; then
 	__color_seq(){
 		# using echo is not posix compliant
 		# but printf is not a builtin in mksh
-		printf '\001\033[01;%sm\001' "$1"
+		echo -n "\001\033[01;$1m\001"
 	}
-	CE=$'\001\033[00m\001' # end of a color sequence
+	C_END=$'\001\033[00m\001' # end of a color sequence
 	TESC=$'\001\r\001\033]0;' # title escape
 	TEND=$'\007\001'
 else
 	__color_seq(){
-		printf '\001\033[01;%sm\002' "$1"
+		echo -n "\001\033[01;$1m\002"
 	}
-	CE=$'\001\033[00m\002'
+	C_END=$'\001\033[00m\002'
 	TESC=$'\001\033]0;'
 	TEND=$'\007\002'
 fi
@@ -42,9 +42,9 @@ C2=$(__color_seq 35)
 
 # better git ps1
 if avail git;then
-	__GIT_PS1_FMT=$(printf " $C2(%%s$CE %%s$C2)$CE")
-	__GIT_RED_FMT=$(printf "$(__color_seq 31)%%s$CE")
-	__GIT_CLN=$(printf "$(__color_seq 32)clean$CE")
+	C_RED="$(__color_seq 31)"
+	C_GREEN="$(__color_seq 32)"
+	__GIT_PS1_FMT=" $C2(\$B$C_END \$S$C2)$C_END"
 
 	__head_n_count() {
 		# prints 1st line, returns line count, only counts to 2
@@ -55,7 +55,7 @@ if avail git;then
 			if test $cnt -gt 1; then
 				return $cnt
 			fi
-			printf '%s' "$l"
+			echo -n "$l"
 		done
 		return $cnt
 	}
@@ -67,18 +67,20 @@ if avail git;then
 		fi
 		local S="$(git status --short)"
 		if test -z "$S"; then
-			S="$__GIT_CLN"
+			S="${C_GREEN}clean$C_END"
 		else
+			# do NOT combine these two lines
+			# since local is a command, it has return value
 			local S1
-			S1="$(printf '%s' "$S"|__head_n_count)"
+			S1="$(echo -n "$S"|__head_n_count)"
 			if test "$?" -gt 1; then
-				S="$(printf "$__GIT_RED_FMT ..." "$S1")"
+				S="$C_RED$S1$C_END ..."
 			else
-				S="$(printf "$__GIT_RED_FMT" "$S1")"
+				S="$CRED$S1$C_END"
 			fi
 		fi
-		# maybe also squeeze a "$(git rev-parse --short=7 HEAD)" in there
-		printf "$__GIT_PS1_FORMAT" "$B" "$S"
+		# maybe also squeeze a "$(git rev-parse --short=7 HEAD)" in there?
+		eval "echo -n \"$__GIT_PS1_FMT\""
 	}
 
 	alias gl='git log --oneline'
@@ -88,8 +90,8 @@ unset -f __color_seq
 
 __pwd() { # \w and ${#//} doesn't work in mksh
 	case "$PWD" in
-		"$HOME"*) printf '~%s' "${PWD#$HOME}";;
-		*) printf '%s' "$PWD";;
+		"$HOME"*) echo -n "~${PWD#$HOME}";;
+		*) echo -n "$PWD";;
 	esac
 }
 
@@ -109,24 +111,24 @@ else
 fi
 # special prefix
 if test "$debian_chroot"; then
-	PS1="$PS1$C2($debian_chroot)$CE"
+	PS1="$PS1$C2($debian_chroot)$C_END"
 elif test "$MSYSTEM"; then
-	PS1="$PS1$C2($MTITLE)$CE"
+	PS1="$PS1$C2($MTITLE)$C_END"
 fi
 # the usual user@host, not for msys and termux
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
-	PS1="$PS1$C0$USER$C1@$C0$(hostname)$CE"
+	PS1="$PS1$C0$USER$C1@$C0$(hostname)$C_END"
 fi
 # the usual :pwd
-PS1="$PS1$C1:\$(__pwd)$CE"
+PS1="$PS1$C1:\$(__pwd)$C_END"
 # git
 # to do: a better impl
 if type __git_ps1 >/dev/null 2>&1; then
 	PS1="$PS1\$(__git_ps1)"
 fi
 # prompt
-PS1="$PS1$C0$PROMPT_CHAR$CE "
-unset PROMPT_CHAR C0 C1 C2 CE TESC TEND MTITLE
+PS1="$PS1$C0$PROMPT_CHAR$C_END "
+unset PROMPT_CHAR C0 C1 C2 TESC TEND MTITLE
 
 # more msys2 specific things
 if test "$MSYSTEM"; then
@@ -162,7 +164,7 @@ try_location(){
 	# https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
 	for f; do
 		if test -f "$f"; then
-			echo "$f"
+			echo -n "$f"
 			break
 		fi
 	done
