@@ -5,9 +5,16 @@
 # quit if not interactive
 case "$-" in *i*) ;; *) return;; esac
 
+avail(){
+	# https://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
+	command -v "$1" >/dev/null 2>&1
+}
+
 # (m)ksh uses a different scheme to mark invisible parts in PS1
 if test "$KSH_VERSION"; then 
 	__color_seq(){
+		# using echo is not posix compliant
+		# but printf is not a builtin in mksh
 		printf '\001\033[01;%sm\001' "$1"
 	}
 	CE=$'\001\033[00m\001' # end of a color sequence
@@ -32,6 +39,50 @@ else
 	PROMPT_CHAR='#'
 fi
 C2=$(__color_seq 35)
+
+# better git ps1
+if avail git;then
+	__GIT_PS1_FMT=$(printf " $C2(%%s$CE %%s$C2)$CE")
+	__GIT_RED_FMT=$(printf "$(__color_seq 31)%%s$CE")
+	__GIT_CLN=$(printf "$(__color_seq 32)clean$CE")
+
+	__head_n_count() {
+		# only counts to 2
+		local cnt=0
+		local l
+		while read l ; do
+			cnt=$((cnt + 1))
+			if test $cnt -gt 1; then
+				return $cnt
+			fi
+			printf '%s' "$l"
+		done
+		return $cnt
+	}
+
+	__git_ps1(){
+		local B="$(git branch --show-current 2>/dev/null)"
+		if test -z "$B"; then
+			return
+		fi
+		local S="$(git status --short)"
+		if test -z "$S"; then
+			S="$__GIT_CLN"
+		else
+			local S1="$(printf '%s' "$S"|__head_n_count)"
+			if test "$?" -gt 1; then
+				S="$(printf "$__GIT_RED_FMT ..." "$S1")"
+			else
+				S="$(printf "$__GIT_RED_FMT" "$S1")"
+			fi
+		fi
+		# maybe also squeeze a "$(git rev-parse --short=7 HEAD)" in there
+		printf "$__GIT_PS1_FORMAT" "$B" "$S"
+	}
+
+	alias gl='git log --oneline'
+fi
+
 unset -f __color_seq
 
 __pwd() { # \w and ${#//} doesn't work in mksh
@@ -40,6 +91,7 @@ __pwd() { # \w and ${#//} doesn't work in mksh
 		*) printf '%s' "$PWD";;
 	esac
 }
+
 # title
 if test "$MSYSTEM"; then
 	# not a good detection, but it works
@@ -69,7 +121,7 @@ PS1="$PS1$C1:\$(__pwd)$CE"
 # git
 # to do: a better impl
 if type __git_ps1 >/dev/null 2>&1; then
-	PS1="$PS1$C2$(__git_ps1)$CE"
+	PS1="$PS1\$(__git_ps1)"
 fi
 # prompt
 PS1="$PS1$C0$PROMPT_CHAR$CE "
@@ -104,11 +156,6 @@ else
 	alias ll='ls -gGh' # g is l minus owner, G hides group
 	alias la='ls -AgGh'
 fi
-
-avail(){
-	# https://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
-	command -v "$1" >/dev/null 2>&1
-}
 
 try_location(){
 	# https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
