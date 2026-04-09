@@ -22,21 +22,21 @@ if test "$KSH_VERSION"; then
 	TEND=$'\007\001'
 else
 	__color_seq(){
-		echo -n "\001\033[01;$1m\002"
+		echo -ne "\001\033[01;$1m\002"
 	}
 	C_END=$'\001\033[00m\002'
 	TESC=$'\001\033]0;'
 	TEND=$'\007\002'
 fi
 # different color/prompt for root
-if test -z "$EUID" -o "$EUID" -ne 0; then
-	C0=$(__color_seq 32)
-	C1=$(__color_seq 36)
-	PROMPT_CHAR='$'
-else
+if test "$EUID" -a "$EUID" -eq 0; then
 	C0=$(__color_seq 31)
 	C1=$(__color_seq 33)
 	PROMPT_CHAR='#'
+else
+	C0=$(__color_seq 32)
+	C1=$(__color_seq 36)
+	PROMPT_CHAR='$'
 fi
 C2=$(__color_seq 35)
 
@@ -113,8 +113,6 @@ fi
 # special prefix
 if test "$debian_chroot"; then
 	PS1="$PS1$C2($debian_chroot)$C_END"
-elif test "$MSYSTEM"; then
-	PS1="$PS1$C2($MTITLE)$C_END"
 fi
 # the usual user@host, not for msys and termux
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
