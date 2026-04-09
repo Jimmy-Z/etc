@@ -1,12 +1,7 @@
 ### ideally, keep local clone shallow
-* initial clone
-	```
-	git clone --depth 1 <this repo>
-	```
-* update
-	```
-	./update
-	```
+```
+git clone --depth 1 <this repo>
+```
 
 ### profile
 source `profile.sh` in `~/.mkshrc` (or `~/.bashrc`)
