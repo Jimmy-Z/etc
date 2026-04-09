@@ -52,7 +52,7 @@ if test "$MSYSTEM"; then
 elif test "$TERMUX_VERSION"; then
 	PS1="${TESC}termux \$(__pwd)$TEND"
 else
-	PS1="$TESC$USER@$HOSTNAME:\$(__pwd)$TEND"
+	PS1="$TESC$USER@$(hostname):\$(__pwd)$TEND"
 fi
 # special prefix
 if test "$debian_chroot"; then
@@ -62,7 +62,7 @@ elif test "$MSYSTEM"; then
 fi
 # the usual user@host, not for msys and termux
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
-	PS1="$PS1$C0$USER$C1@$C0$HOSTNAME$CE"
+	PS1="$PS1$C0$USER$C1@$C0$(hostname)$CE"
 fi
 # the usual :pwd
 PS1="$PS1$C1:\$(__pwd)$CE"
