@@ -1,22 +1,24 @@
-# trying to be portable, tested with bash and mksh
+# trying to be portable
+# tested with mksh and bash in debian, arch, msys2 and termux
+# (not all combinations)
 
 # quit if not interactive
 case "$-" in *i*) ;; *) return;; esac
 
-# (m)ksh uses a different method to mark invisible parts in PS1
+# (m)ksh uses a different scheme to mark invisible parts in PS1
 if test "$KSH_VERSION"; then 
 	__color_seq(){
 		printf '\001\033[01;%sm\001' "$1"
 	}
-	CE=$'\001\033[00m\001'
-	TITLE=$'\001\r\001\033]0;'
+	CE=$'\001\033[00m\001' # end of a color sequence
+	TESC=$'\001\r\001\033]0;' # title escape
 	TEND=$'\007\001'
 else
 	__color_seq(){
 		printf '\001\033[01;%sm\002' "$1"
 	}
 	CE=$'\001\033[00m\002'
-	TITLE=$'\001\033]0;'
+	TESC=$'\001\033]0;'
 	TEND=$'\007\002'
 fi
 # different color/prompt for root
@@ -30,7 +32,9 @@ else
 	PROMPT_CHAR='#'
 fi
 C2=$(__color_seq 35)
-__pwd() { # \w is bash only
+unset -f __color_seq
+
+__pwd() { # \w and ${#//} doesn't work in mksh
 	case "$PWD" in
 		"$HOME"*) printf '~%s' "${PWD#$HOME}";;
 		*) printf '%s' "$PWD";;
@@ -38,17 +42,23 @@ __pwd() { # \w is bash only
 }
 # title
 if test "$MSYSTEM"; then
-	PS1="$TITLE$MSYSTEM \$(__pwd)$TEND"
+	# not a good detection, but it works
+	if test "$HOME" == "$(cygpath -u "$USERPROFILE")"; then
+		MTITLE="git bash"
+	else
+		MTITLE="$MSYSTEM"
+	fi
+	PS1="$TESC$MTITLE \$(__pwd)$TEND"
 elif test "$TERMUX_VERSION"; then
-	PS1="${TITLE}termux \$(__pwd)$TEND"
+	PS1="${TESC}termux \$(__pwd)$TEND"
 else
-	PS1="$TITLE$USER@$HOSTNAME:\$(__pwd)$TEND"
+	PS1="$TESC$USER@$HOSTNAME:\$(__pwd)$TEND"
 fi
 # special prefix
 if test "$debian_chroot"; then
 	PS1="$PS1$C2($debian_chroot)$CE"
 elif test "$MSYSTEM"; then
-	PS1="$PS1$C2($MSYSTEM)$CE"
+	PS1="$PS1$C2($MTITLE)$CE"
 fi
 # the usual user@host, not for msys and termux
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
@@ -57,18 +67,24 @@ fi
 # the usual :pwd
 PS1="$PS1$C1:\$(__pwd)$CE"
 # git
+# to do: a better impl
 if type __git_ps1 >/dev/null 2>&1; then
 	PS1="$PS1$C2$(__git_ps1)$CE"
 fi
 # prompt
 PS1="$PS1$C0$PROMPT_CHAR$CE "
-unset PROMPT_CHAR C0 C1 C2 CE TITLE TEND
+unset PROMPT_CHAR C0 C1 C2 CE TESC TEND MTITLE
 
 # more msys2 specific things
 if test "$MSYSTEM"; then
 	export MSYS=winsymlinks:nativestrict
-	export SSH_AUTH_SOCK=$(cygpath -u $LOCALAPPDATA)/ssh-auth-sock
-	# add scoop shims to PATH, since reasons
+	# do not set this for git bash
+	# since using windows native ssh is a better approach
+	# and setting SSH_AUTH_SOCK will break it
+	if test "$HOME" != "$(cygpath -u $USERPROFILE)"; then
+		export SSH_AUTH_SOCK="$(cygpath -u $LOCALAPPDATA)/ssh-auth-sock"
+	fi
+	# add scoop shims to PATH, basically for neovide
 	# to do: detect scoop location
 	SCOOP=/d/scoop/shims
 	if test -d "$SCOOP"; then
@@ -99,10 +115,17 @@ try_location(){
 	done
 }
 
-if avail apt-cache;then
+if avail apt;then
+	alias p='apt update&&apt autoclean&&apt list --upgradable'
+	alias pu='apt upgrade'
+	alias pi='apt install --no-install-recommends'
+	alias pr='apt purge'
+	alias pq='apt search -n'
+	alias po='dpkg -S' # which package provides/owns a file
 	# apt doesn't have a good "list explicitly installed" like `pacman -Qe`
 	# this is probably the best approach: list all "top-level" packages
 	# i.e. doesn't have any other packages depending on them
+	# https://askubuntu.com/questions/1114733/how-do-i-list-all-packages-that-no-package-depends-on
 	pe(){
 		dpkg-query --show --showformat='${Package}\t${Status}\n' |\
 			tac |\
@@ -111,24 +134,14 @@ if avail apt-cache;then
 			tac |\
 			awk '{ if (/^ /) ++deps; else if (!/:$/) { if (!deps) print; deps = 0 } }'
 	}
-fi
-
-if avail apt;then
-	alias pi='apt install --no-install-recommends'
-	alias pu='apt update&&apt autoclean&&apt upgrade'
-	alias pr='apt purge'
-	alias pq='apt search -n'
-elif avail apt-get;then
-	alias pi='apt-get install --no-install-recommends'
-	alias pu='apt-get update&&apt-get autoclean&&apt-get upgrade'
-	alias pr='apt-get purge'
-	alias pq='apt-cache search -n'
 elif avail pacman;then
+	alias p='pacman -Sy&&pacman -Sc --no-confirm&&pacman -Qu'
+	alias pu='pacman -Su'
 	alias pi='pacman -S'
-	alias pu='pacman -Syu;pacman -Sc'
 	alias pr='pacman -R'
 	alias pq='pacman -Ss'
 	alias pe='pacman -Qe'
+	alias po='pacman -Qo'
 fi
 
 if avail nvim; then
