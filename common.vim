@@ -3,8 +3,10 @@
 " K on them to get help, or https://vimhelp.org/
 
 set title
-set titlestring=%f\ \(%{getcwd()}\)
-set statusline=%h%w%m%r\ %f\ \(%{getcwd()}\)\ %=\ %{&filetype}\ %{&fenc}\ %{&fileformat}\ \(%l,%c\)\ %P
+set titlestring=%f\ \(%{pathshorten(fnamemodify(getcwd(),':p:~'),42)}\)
+set statusline=%(%h%w%m%r\ %)
+set statusline+=%f\ \(%{pathshorten(fnamemodify(getcwd(),':p:~'),42)}\)
+set statusline+=\ %=\ %{&filetype}\ %{&fenc}\ %{&fileformat}\ \(%l,%c\)\ %P
 
 " most of the time I don't need this, so to save some space
 " set number
