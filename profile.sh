@@ -1,5 +1,5 @@
 # trying to be portable
-# tested with mksh and bash in debian, arch, msys2 and termux
+# tested with mksh and bash in debian, arch, msys2, git-bash(windows) and termux
 # (not all combinations)
 
 # quit if not interactive
@@ -140,7 +140,7 @@ if avail apt;then
 			awk '{ if (/^ /) ++deps; else if (!/:$/) { if (!deps) print; deps = 0 } }'
 	}
 elif avail pacman;then
-	alias p='pacman -Sy&&pacman -Sc --no-confirm&&pacman -Qu'
+	alias p='pacman -Sy&&pacman -Sc --noconfirm&&pacman -Qu'
 	alias pu='pacman -Su'
 	alias pi='pacman -S'
 	alias pr='pacman -R'
