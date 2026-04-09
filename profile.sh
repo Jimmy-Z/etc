@@ -2,6 +2,8 @@
 # tested with mksh and bash in debian, arch, msys2, git-bash(windows) and termux
 # (not all combinations)
 
+
+
 # quit if not interactive
 case "$-" in *i*) ;; *) return;; esac
 
@@ -44,7 +46,7 @@ C2=$(__color_seq 35)
 if avail git;then
 	C_RED="$(__color_seq 31)"
 	C_GREEN="$(__color_seq 32)"
-	__GIT_PS1_FMT=" $C2(\$B$C_END \$S$C2)$C_END"
+	__GIT_PS1_FMT=" $C2(\$b$C_END \$s$C2)$C_END"
 
 	__head_n_count() {
 		# prints 1st line, returns line count, only counts to 2
@@ -61,22 +63,25 @@ if avail git;then
 	}
 
 	__git_ps1(){
-		local B="$(git branch --show-current 2>/dev/null)"
-		if test -z "$B"; then
+		local b="$(git branch --show-current 2>/dev/null)"
+		if test -z "$b"; then
 			return
 		fi
-		local S="$(git status --short)"
-		if test -z "$S"; then
-			S="${C_GREEN}clean$C_END"
+		local s="$(git status --short)"
+		if test -z "$s"; then
+			s="${C_GREEN}clean$C_END"
 		else
 			# do NOT combine these two lines
 			# since local is a command, it has return value
-			local S1
-			S1="$(echo -n "$S"|__head_n_count)"
-			if test "$?" -gt 1; then
-				S="$C_RED$S1$C_END ..."
+			local s1
+			local cnt
+			s1="$(echo -n "$s"|__head_n_count)"
+			cnt="$?"
+			# echo "debug: $cnt" >&2
+			if test "$cnt" -gt 1; then
+				s="$C_RED$s1$C_END ..."
 			else
-				S="$CRED$S1$C_END"
+				s="$C_RED$s1$C_END"
 			fi
 		fi
 		# maybe also squeeze a "$(git rev-parse --short=7 HEAD)" in there?
