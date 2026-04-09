@@ -161,3 +161,6 @@ avail tmux && alias ta='tmux a||tmux'
 # this thing is really nasty though, dbus and stuff
 avail udisksctl && alias eject='udisksctl power-off --block-device'
 
+avail tabs && tabs 3
+export LESS="--tabs=3 -R"
+
