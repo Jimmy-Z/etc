@@ -47,10 +47,10 @@ if avail git;then
 	__GIT_CLN=$(printf "$(__color_seq 32)clean$CE")
 
 	__head_n_count() {
-		# only counts to 2
+		# prints 1st line, returns line count, only counts to 2
 		local cnt=0
 		local l
-		while read l ; do
+		while read l; do
 			cnt=$((cnt + 1))
 			if test $cnt -gt 1; then
 				return $cnt
@@ -69,7 +69,8 @@ if avail git;then
 		if test -z "$S"; then
 			S="$__GIT_CLN"
 		else
-			local S1="$(printf '%s' "$S"|__head_n_count)"
+			local S1
+			S1="$(printf '%s' "$S"|__head_n_count)"
 			if test "$?" -gt 1; then
 				S="$(printf "$__GIT_RED_FMT ..." "$S1")"
 			else
