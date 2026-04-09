@@ -97,8 +97,13 @@ fi
 
 alias ls='ls --color=auto'
 alias l='ls -CF'
-alias ll='ls -lh'
-alias la='ls -Alh'
+if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
+	alias ll='ls -lh'
+	alias la='ls -Alh' # A is a minus . and ..
+else
+	alias ll='ls -gGh' # g is l minus owner, G hides group
+	alias la='ls -AgGh'
+fi
 
 avail(){
 	# https://stackoverflow.com/questions/592620/check-if-a-program-exists-from-a-bash-script
