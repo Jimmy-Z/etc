@@ -3,11 +3,12 @@
 git clone --depth 1 <this repo>
 ```
 
-### profile
-source `profile.sh` in `~/.mkshrc` (or `~/.bashrc`)
+### mkshrc/bashrc
+source `shrc` in `~/.mkshrc` or `~/.bashrc`
+or `/etc/bash.bashrc`
 ```sh
-if test -f ~/etc/profile.sh; then
-	. ~/etc/profile.sh
+if test -f ~/etc/shrc; then
+	. ~/etc/shrc
 fi
 ```
 
@@ -24,3 +25,4 @@ source ~/etc/vim.vim
 * source `common.vim` and `neovim.vim`
 * I only use neovim on windows, conf location:
 `%LOCALAPPDATA%\nvim\init.vim`
+
