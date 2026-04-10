@@ -1,3 +1,4 @@
+# vim: set ft=sh:
 # trying to be portable
 # tested with mksh and bash in debian, arch, msys2, git-bash(windows) and termux
 # (not all combinations)
@@ -42,8 +43,7 @@ C2=$(__color_seq 35)
 
 # better git ps1
 if avail git;then
-	C_RED="$(__color_seq 31)"
-	C_GREEN="$(__color_seq 32)"
+	__GIT_STATUS_CLEAN="$(__color_seq 32)clean$C_END"
 	__GIT_PS1_FMT=" $C2(\$b$C_END \$s$C2)$C_END"
 
 	__head_n_count() {
@@ -70,11 +70,11 @@ if avail git;then
 		# since local is a command, it has return value
 		local s
 		local cnt
-		s="$(git -c color.ui=always status --short|__head_n_count)"
+		s="$(git -c color.ui=always status -s -uno|__head_n_count)"
 		cnt=$?
 		# echo "debug: $s, $cnt" >&2
 		if test "$cnt" -eq 0; then
-			s="${C_GREEN}clean$C_END"
+			s="$__GIT_STATUS_CLEAN"
 		elif test "$cnt" -gt 1; then
 			s="$s ..."
 		fi
@@ -86,8 +86,6 @@ if avail git;then
 	alias gs='git pull --rebase&&git push'
 	alias gu1='git pull --depth=1&&git gc --prune=now'
 fi
-
-unset -f __color_seq
 
 __pwd() { # \w and ${#//} doesn't work in mksh
 	case "$PWD" in
@@ -127,7 +125,8 @@ if type __git_ps1 >/dev/null 2>&1; then
 fi
 # prompt
 PS1="$PS1$C0$PROMPT_CHAR$C_END "
-unset PROMPT_CHAR C0 C1 C2 TESC TEND MTITLE
+unset PROMPT_CHAR C0 C1 C2 C_END TESC TEND MTITLE
+unset -f __color_seq
 
 # more msys2 specific things
 if test "$MSYSTEM"; then
