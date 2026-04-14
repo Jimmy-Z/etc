@@ -11,6 +11,8 @@ autocmd TextYankPost * silent! lua vim.hl.on_yank()
 
 " https://neovide.dev/configuration.html
 let g:neovide_cursor_vfx_mode = "pixiedust"
+let g:neovide_pixel_geometry = "RGBH"
+
 augroup ime_input " ime only in ins/cmd mode
 	autocmd!
 	autocmd InsertLeave * execute "let g:neovide_input_ime=v:false"
@@ -20,3 +22,9 @@ augroup ime_input " ime only in ins/cmd mode
 augroup END
 
 colorscheme sorbet
+
+highlight StatusLine gui=NONE cterm=NONE
+highlight StatusLineNC gui=NONE cterm=NONE
+
+" hl
+

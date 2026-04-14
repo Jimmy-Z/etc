@@ -139,11 +139,16 @@ if test "$MSYSTEM"; then
 	fi
 	# add scoop shims to PATH, basically for neovide
 	# to do: detect scoop location
-	SCOOP=/d/scoop/shims
-	if test -d "$SCOOP"; then
-		export PATH=$PATH:$SCOOP
+	SCOOP=/d/scoop/
+	NVIM=$SCOOP/apps/neovim/current/bin
+	if test -d "$NVIM"; then
+		export PATH=$PATH:$NVIM
 	fi
-	unset SCOOP
+	NVIDE=$SCOOP/apps/neovide/current
+	if test -d "$NVIDE";then
+		export PATH=$PATH:$NVIDE
+	fi
+	unset SCOOP NVIM NVIDE
 fi
 
 # common aliases

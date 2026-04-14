@@ -1,4 +1,8 @@
 # make a link here: %APPDATA%\neovide\config.toml
+# ref https://neovide.dev/config-file.html
+
+grid = "80x25"
+
 [font]
 size = 11
 edging = "subpixelantialias"
