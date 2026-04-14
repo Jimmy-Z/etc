@@ -30,10 +30,7 @@ else
 	TEND=$'\007\002'
 fi
 # different color/prompt for root
-if test -z "$EUID"; then
-	EUID=$(id -u)
-fi
-if test "$EUID" -eq 0; then
+if test $(id -u) -eq 0; then
 	C0=$(__color_seq 31)
 	C1=$(__color_seq 33)
 	PROMPT_CHAR='#'
