@@ -12,7 +12,7 @@ avail(){
 }
 
 # (m)ksh uses a different scheme to mark invisible parts in PS1
-if test "$KSH_VERSION"; then 
+if test "$KSH_VERSION"; then
 	__color_seq(){
 		# using echo is not posix compliant
 		# but printf is not a builtin in mksh
@@ -106,20 +106,19 @@ if test "$MSYSTEM"; then
 elif test "$TERMUX_VERSION"; then
 	PS1="${TESC}termux \$(__pwd)$TEND"
 else
-	PS1="$TESC$USER@$(hostname):\$(__pwd)$TEND"
+	PS1="$TESC$USER@$(</proc/sys/kernel/hostname):\$(__pwd)$TEND"
 fi
 # special prefix
 if test "$debian_chroot"; then
 	PS1="$PS1$C2($debian_chroot)$C_END"
 fi
-# the usual user@host, not for msys and termux
+# the usual user@host:pwd, no u/h for msys and termux though
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
-	PS1="$PS1$C0$USER$C1@$C0$(hostname)$C_END"
+	PS1="$PS1$C0$USER$C1@$C0$(</proc/sys/kernel/hostname)$C1:\$(__pwd)$C_END"
+else
+	PS1="$PS1$C1\$(__pwd)$C_END"
 fi
-# the usual :pwd
-PS1="$PS1$C1:\$(__pwd)$C_END"
 # git
-# to do: a better impl
 if type __git_ps1 >/dev/null 2>&1; then
 	PS1="$PS1\$(__git_ps1)"
 fi
@@ -137,18 +136,15 @@ if test "$MSYSTEM"; then
 	if test "$HOME" != "$(cygpath -u $USERPROFILE)"; then
 		export SSH_AUTH_SOCK="$(cygpath -u $LOCALAPPDATA)/ssh-auth-sock"
 	fi
-	# add scoop shims to PATH, basically for neovide
+	# add scoop neovide/nvim to PATH
 	# to do: detect scoop location
-	SCOOP=/d/scoop/
-	NVIM=$SCOOP/apps/neovim/current/bin
-	if test -d "$NVIM"; then
-		export PATH=$PATH:$NVIM
-	fi
-	NVIDE=$SCOOP/apps/neovide/current
-	if test -d "$NVIDE";then
-		export PATH=$PATH:$NVIDE
-	fi
-	unset SCOOP NVIM NVIDE
+	SCOOP=/d/scoop/apps
+	for d in $SCOOP/neovim/current/bin $SCOOP/neovide/current; do
+		if test -d "$d"; then
+			export PATH=$PATH:"$d"
+		fi
+	done
+	unset SCOOP d
 fi
 
 # common aliases
@@ -157,9 +153,9 @@ alias ls='ls --color=auto'
 alias l='ls -CF'
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
 	alias ll='ls -lh'
-	alias la='ls -Alh' # A is a minus . and ..
+	alias la='ls -Alh' # -A is -a minus . and ..
 else
-	alias ll='ls -gGh' # g is l minus owner, G hides group
+	alias ll='ls -gGh' # -g is -l minus owner, -G hides group
 	alias la='ls -AgGh'
 fi
 
@@ -221,4 +217,3 @@ avail udisksctl && alias eject='udisksctl power-off --block-device'
 
 avail tabs && tabs 3
 export LESS="--tabs=3 -R"
-
