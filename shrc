@@ -97,7 +97,7 @@ __pwd() { # \w and ${#//} doesn't work in mksh
 # title
 if test "$MSYSTEM"; then
 	# not a good detection, but it works
-	if test "$HOME" == "$(cygpath -u "$USERPROFILE")"; then
+	if test "$HOME" = "$(cygpath -u "$USERPROFILE")"; then
 		MTITLE="git bash"
 	else
 		MTITLE="$MSYSTEM"
@@ -150,7 +150,7 @@ fi
 # common aliases
 
 alias ls='ls --color=auto'
-alias l='ls -CF'
+alias l='ls'
 if test -z "$MSYSTEM" -a -z "$TERMUX_VERSION"; then
 	alias ll='ls -lh'
 	alias la='ls -Alh' # -A is -a minus . and ..
