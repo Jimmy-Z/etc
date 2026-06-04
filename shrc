@@ -171,7 +171,7 @@ try_location(){
 
 if avail apt;then
 	alias p='apt update&&apt autoclean&&apt list --upgradable'
-	alias pu='apt upgrade'
+	alias pu='apt upgrade --no-install-recommends'
 	alias pi='apt install --no-install-recommends'
 	alias pr='apt purge'
 	alias pq='apt search -n'
@@ -214,6 +214,8 @@ avail tmux && alias ta='tmux a||tmux'
 
 # this thing is really nasty though, dbus and stuff
 avail udisksctl && alias eject='udisksctl power-off --block-device'
+
+alias cfct='curl $CURL_OPTS https://cloudflare.com/cdn-cgi/trace'
 
 avail tabs && tabs 3
 export LESS="--tabs=3 -R"
