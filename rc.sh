@@ -46,6 +46,11 @@ if avail git;then
 	__GIT_STATUS_CLEAN="$(__color_seq 32)clean$C_END"
 	__GIT_PS1_FMT=" $C2(\$b$C_END \$s$C2)$C_END"
 
+
+	__trim_print() {
+		echo -n "$*"
+	}
+
 	__head_n_count() {
 		# prints 1st line, returns line count, only counts to 2
 		local c=0
@@ -56,7 +61,7 @@ if avail git;then
 			if test $c -gt 1; then
 				return $c
 			fi
-			echo -n "$l"
+			__trim_print $l
 		done
 		return $c
 	}
