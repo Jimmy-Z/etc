@@ -14,7 +14,7 @@ avail(){
 # (m)ksh uses a different scheme to mark invisible parts in PS1
 if test "$KSH_VERSION"; then
 	__color_seq(){
-		# using echo is not posix compliant
+		# echo -n is not posix compliant
 		# but printf is not a builtin in mksh
 		echo -n "\001\033[01;$1m\001"
 	}
